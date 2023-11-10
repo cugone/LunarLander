@@ -26,6 +26,15 @@
     <Filter Include="Data\Shaders">
       <UniqueIdentifier>{38c32011-edaf-4083-bb77-be03e4e3d720}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Data\Audio">
+      <UniqueIdentifier>{e9c093f5-cba4-48a5-a274-96fd8debf05a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Audio\Music">
+      <UniqueIdentifier>{969d5f75-c741-4a2f-b798-c33b73122da0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Audio\Sound">
+      <UniqueIdentifier>{1ccf4bc9-332f-41de-8f89-1e3fdb8f9d8d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main_Win32.cpp">
@@ -51,5 +60,84 @@
     <ClInclude Include="GameConfig.hpp">
       <Filter>General</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\Run_x64\Data\Images\LunarLander.png">
+      <Filter>Data\Images</Filter>
+    </Image>
+    <Image Include="..\..\Run_x64\Data\Images\tileset2.png">
+      <Filter>Data\Images</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="..\..\Run_x64\Data\Audio\Music\Jupiter.wav">
+      <Filter>Data\Audio\Music</Filter>
+    </Media>
+    <Media Include="..\..\Run_x64\Data\Audio\Sound\Debris1.wav">
+      <Filter>Data\Audio\Sound</Filter>
+    </Media>
+    <Media Include="..\..\Run_x64\Data\Audio\Sound\Debris2.wav">
+      <Filter>Data\Audio\Sound</Filter>
+    </Media>
+    <Media Include="..\..\Run_x64\Data\Audio\Sound\Debris3.wav">
+      <Filter>Data\Audio\Sound</Filter>
+    </Media>
+    <Media Include="..\..\Run_x64\Data\Audio\Sound\Decompression.wav">
+      <Filter>Data\Audio\Sound</Filter>
+    </Media>
+    <Media Include="..\..\Run_x64\Data\Audio\Sound\Driving.wav">
+      <Filter>Data\Audio\Sound</Filter>
+    </Media>
+    <Media Include="..\..\Run_x64\Data\Audio\Sound\Explosion1.wav">
+      <Filter>Data\Audio\Sound</Filter>
+    </Media>
+    <Media Include="..\..\Run_x64\Data\Audio\Sound\Explosion2.wav">
+      <Filter>Data\Audio\Sound</Filter>
+    </Media>
+    <Media Include="..\..\Run_x64\Data\Audio\Sound\Explosion3.wav">
+      <Filter>Data\Audio\Sound</Filter>
+    </Media>
+    <Media Include="..\..\Run_x64\Data\Audio\Sound\Explosion4.wav">
+      <Filter>Data\Audio\Sound</Filter>
+    </Media>
+    <Media Include="..\..\Run_x64\Data\Audio\Sound\Explosion5.wav">
+      <Filter>Data\Audio\Sound</Filter>
+    </Media>
+    <Media Include="..\..\Run_x64\Data\Audio\Sound\Explosion6.wav">
+      <Filter>Data\Audio\Sound</Filter>
+    </Media>
+    <Media Include="..\..\Run_x64\Data\Audio\Sound\Parachutes.wav">
+      <Filter>Data\Audio\Sound</Filter>
+    </Media>
+    <Media Include="..\..\Run_x64\Data\Audio\Sound\Rustle1.wav">
+      <Filter>Data\Audio\Sound</Filter>
+    </Media>
+    <Media Include="..\..\Run_x64\Data\Audio\Sound\Rustle2.wav">
+      <Filter>Data\Audio\Sound</Filter>
+    </Media>
+    <Media Include="..\..\Run_x64\Data\Audio\Sound\Rustle3.wav">
+      <Filter>Data\Audio\Sound</Filter>
+    </Media>
+    <Media Include="..\..\Run_x64\Data\Audio\Sound\ThrustLow.wav">
+      <Filter>Data\Audio\Sound</Filter>
+    </Media>
+    <Media Include="..\..\Run_x64\Data\Audio\Sound\Touch.wav">
+      <Filter>Data\Audio\Sound</Filter>
+    </Media>
+    <Media Include="..\..\Run_x64\Data\Audio\Sound\VictoryBig.wav">
+      <Filter>Data\Audio\Sound</Filter>
+    </Media>
+    <Media Include="..\..\Run_x64\Data\Audio\Sound\VictorySmall.wav">
+      <Filter>Data\Audio\Sound</Filter>
+    </Media>
+    <Media Include="..\..\Run_x64\Data\Audio\Sound\WaterSplash.wav">
+      <Filter>Data\Audio\Sound</Filter>
+    </Media>
+    <Media Include="..\..\Run_x64\Data\Audio\Sound\Wind.wav">
+      <Filter>Data\Audio\Sound</Filter>
+    </Media>
+    <Media Include="..\..\Run_x64\Data\Audio\Sound\WindParticles.wav">
+      <Filter>Data\Audio\Sound</Filter>
+    </Media>
   </ItemGroup>
 </Project>

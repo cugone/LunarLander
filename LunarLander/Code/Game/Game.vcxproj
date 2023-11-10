@@ -162,6 +162,35 @@
       <Project>{acbda225-83de-4fba-a746-0135429fb391}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\Run_x64\Data\Images\LunarLander.png" />
+    <Image Include="..\..\Run_x64\Data\Images\tileset2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="..\..\Run_x64\Data\Audio\Music\Jupiter.wav" />
+    <Media Include="..\..\Run_x64\Data\Audio\Sound\Debris1.wav" />
+    <Media Include="..\..\Run_x64\Data\Audio\Sound\Debris2.wav" />
+    <Media Include="..\..\Run_x64\Data\Audio\Sound\Debris3.wav" />
+    <Media Include="..\..\Run_x64\Data\Audio\Sound\Decompression.wav" />
+    <Media Include="..\..\Run_x64\Data\Audio\Sound\Driving.wav" />
+    <Media Include="..\..\Run_x64\Data\Audio\Sound\Explosion1.wav" />
+    <Media Include="..\..\Run_x64\Data\Audio\Sound\Explosion2.wav" />
+    <Media Include="..\..\Run_x64\Data\Audio\Sound\Explosion3.wav" />
+    <Media Include="..\..\Run_x64\Data\Audio\Sound\Explosion4.wav" />
+    <Media Include="..\..\Run_x64\Data\Audio\Sound\Explosion5.wav" />
+    <Media Include="..\..\Run_x64\Data\Audio\Sound\Explosion6.wav" />
+    <Media Include="..\..\Run_x64\Data\Audio\Sound\Parachutes.wav" />
+    <Media Include="..\..\Run_x64\Data\Audio\Sound\Rustle1.wav" />
+    <Media Include="..\..\Run_x64\Data\Audio\Sound\Rustle2.wav" />
+    <Media Include="..\..\Run_x64\Data\Audio\Sound\Rustle3.wav" />
+    <Media Include="..\..\Run_x64\Data\Audio\Sound\ThrustLow.wav" />
+    <Media Include="..\..\Run_x64\Data\Audio\Sound\Touch.wav" />
+    <Media Include="..\..\Run_x64\Data\Audio\Sound\VictoryBig.wav" />
+    <Media Include="..\..\Run_x64\Data\Audio\Sound\VictorySmall.wav" />
+    <Media Include="..\..\Run_x64\Data\Audio\Sound\WaterSplash.wav" />
+    <Media Include="..\..\Run_x64\Data\Audio\Sound\Wind.wav" />
+    <Media Include="..\..\Run_x64\Data\Audio\Sound\WindParticles.wav" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
