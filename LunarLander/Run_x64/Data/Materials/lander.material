@@ -1,0 +1,6 @@
+<material name="lander">
+    <shader src="Data/Shaders/lander.shader" />
+    <textures>
+        <diffuse src="Data/Images/lander.png"/>
+    </textures>
+</material>

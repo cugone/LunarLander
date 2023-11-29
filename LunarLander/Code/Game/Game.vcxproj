@@ -150,12 +150,14 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameCommon.cpp" />
     <ClCompile Include="GameConfig.cpp" />
+    <ClCompile Include="Lander.cpp" />
     <ClCompile Include="Main_Win32.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.hpp" />
     <ClInclude Include="GameCommon.hpp" />
     <ClInclude Include="GameConfig.hpp" />
+    <ClInclude Include="Lander.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Abrams2022\Engine\Code\Engine\Engine.vcxproj">
@@ -163,6 +165,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Image Include="..\..\Run_x64\Data\Images\Lander.png" />
     <Image Include="..\..\Run_x64\Data\Images\LunarLander.png" />
     <Image Include="..\..\Run_x64\Data\Images\tileset2.png" />
   </ItemGroup>
@@ -190,6 +193,10 @@
     <Media Include="..\..\Run_x64\Data\Audio\Sound\WaterSplash.wav" />
     <Media Include="..\..\Run_x64\Data\Audio\Sound\Wind.wav" />
     <Media Include="..\..\Run_x64\Data\Audio\Sound\WindParticles.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Run_x64\Data\Materials\lander.material" />
+    <None Include="..\..\Run_x64\Data\Shaders\lander.shader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

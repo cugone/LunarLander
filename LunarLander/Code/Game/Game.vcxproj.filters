@@ -49,6 +49,9 @@
     <ClCompile Include="GameConfig.cpp">
       <Filter>General</Filter>
     </ClCompile>
+    <ClCompile Include="Lander.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameCommon.hpp">
@@ -60,12 +63,18 @@
     <ClInclude Include="GameConfig.hpp">
       <Filter>General</Filter>
     </ClInclude>
+    <ClInclude Include="Lander.hpp">
+      <Filter>Game</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\Run_x64\Data\Images\LunarLander.png">
       <Filter>Data\Images</Filter>
     </Image>
     <Image Include="..\..\Run_x64\Data\Images\tileset2.png">
+      <Filter>Data\Images</Filter>
+    </Image>
+    <Image Include="..\..\Run_x64\Data\Images\Lander.png">
       <Filter>Data\Images</Filter>
     </Image>
   </ItemGroup>
@@ -139,5 +148,13 @@
     <Media Include="..\..\Run_x64\Data\Audio\Sound\WindParticles.wav">
       <Filter>Data\Audio\Sound</Filter>
     </Media>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Run_x64\Data\Materials\lander.material">
+      <Filter>Data\Materials</Filter>
+    </None>
+    <None Include="..\..\Run_x64\Data\Shaders\lander.shader">
+      <Filter>Data\Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
