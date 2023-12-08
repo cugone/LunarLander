@@ -6,6 +6,11 @@
 #include "Engine/Core/OrthographicCameraController.hpp"
 
 #include "Engine/Renderer/Camera2D.hpp"
+#include "Engine/Renderer/SpriteSheet.hpp"
+
+#include "Game/Lander.hpp"
+
+#include <memory>
 
 class GameOptions : public GameSettings {
 public:
@@ -57,6 +62,7 @@ public:
     const GameOptions& GetSettings() const noexcept override;
     GameOptions& GetSettings() noexcept override;
 
+    [[nodiscard]] std::weak_ptr<SpriteSheet> GetLanderSheet() const noexcept;
 
     bool IsCameraRotationLockedToLander() const noexcept;
     void LockCameraRotationToLander() noexcept;
@@ -89,6 +95,8 @@ private:
     mutable Camera2D m_ui_camera2D{};
     mutable OrthographicCameraController m_cameraController{};
     GameOptions m_settings{};
+    std::shared_ptr<SpriteSheet> m_landerSheet{};
+    std::unique_ptr<Lander> m_lander{};
     bool m_debug_render{ false };
     bool m_lockPositionToMouse{ false };
     bool m_lockCameraRotation{ false };

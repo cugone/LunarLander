@@ -5,7 +5,10 @@
 
 #include "Engine/Input/InputSystem.hpp"
 
+#include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/Disc2.hpp"
+#include "Engine/Math/OBB2.hpp"
+#include "Engine/Math/MathUtils.hpp"
 
 #include "Engine/Renderer/Renderer.hpp"
 #include "Engine/Renderer/Material.hpp"
@@ -60,8 +63,18 @@ void Game::Initialize() noexcept {
     g_theRenderer->RegisterMaterialsFromFolder(FileUtils::GetKnownFolderPath(FileUtils::KnownPathID::GameMaterials));
     g_theRenderer->RegisterFontsFromFolder(FileUtils::GetKnownFolderPath(FileUtils::KnownPathID::GameFonts));
 
-    _cameraController = OrthographicCameraController();
-    _cameraController.SetPosition(Vector2::Zero);
+    m_cameraController = OrthographicCameraController();
+    m_cameraController.SetPosition(Vector2::Zero);
+    m_cameraController.SetZoomLevelRange(Vector2{8.0f, static_cast<float>(g_theRenderer->GetOutput()->GetDimensions().y)});
+    m_cameraController.SetZoomLevel(static_cast<float>(g_theRenderer->GetOutput()->GetDimensions().y));
+
+    m_lockCameraRotation = GetSettings().IsCameraRotationLocked();
+    m_lockCameraPosition = GetSettings().IsCameraPositionLocked();
+
+    m_landerSheet = g_theRenderer->CreateSpriteSheet("Data/Images/Lander.png", 3, 1);
+
+    m_lander = std::make_unique<Lander>();
+    m_lander->SetPosition(Vector2::Zero);
 }
 
 void Game::BeginFrame() noexcept {
@@ -76,8 +89,15 @@ void Game::Update(TimeUtils::FPSeconds deltaSeconds) noexcept {
     m_ui_camera2D.Update(deltaSeconds);
     m_cameraController.Update(deltaSeconds);
 
+    m_lander->Update(deltaSeconds);
     m_cameraController.SetPosition(Vector2::Zero);
     m_cameraController.SetRotationDegrees(0.0f);
+    if(IsCameraRotationLockedToLander()) {
+        m_cameraController.SetRotationDegrees(m_lander->GetOrientationDegrees());
+    }
+    if(IsCameraPositionLocked()) {
+        m_cameraController.SetPosition(m_lander->GetPosition());
+    }
 }
 AABB2 Game::CalcOrthoBounds() const noexcept {
     float half_view_height = m_cameraController.GetCamera().GetViewHeight() * 0.5f;
@@ -137,6 +157,9 @@ void Game::Render() const noexcept {
     g_theRenderer->SetModelMatrix(Matrix4::I);
     g_theRenderer->DrawAABB2(ground, Rgba::White, Rgba::LightGray, Vector2::One);
 
+    m_lander->Render();
+    if (m_debug_render) {
+        m_lander->DebugRender();
     }
     // HUD View
 
@@ -207,13 +230,25 @@ void Game::HandlePlayerInput(TimeUtils::FPSeconds deltaSeconds) {
     HandleMouseInput(deltaSeconds);
 }
 
-void Game::HandleKeyboardInput(TimeUtils::FPSeconds /*deltaSeconds*/) {
+void Game::HandleKeyboardInput(TimeUtils::FPSeconds deltaSeconds) {
     if(g_theInputSystem->WasKeyJustPressed(KeyCode::Esc)) {
         auto* app = ServiceLocator::get<IAppService>();
         app->SetIsQuitting(true);
         return;
     }
     HandleDebugInput(deltaSeconds);
+    if (g_theInputSystem->IsKeyDown(KeyCode::Q)) {
+        m_lander->RotateLeft();
+    }
+    if (g_theInputSystem->IsKeyDown(KeyCode::E)) {
+        m_lander->RotateRight();
+    }
+    if (g_theInputSystem->IsKeyDown(KeyCode::S)) {
+        m_lander->BeginThrust();
+    }
+    if (g_theInputSystem->WasKeyJustReleased(KeyCode::S)) {
+        m_lander->EndThrust();
+    }
 }
 
 void Game::HandleControllerInput(TimeUtils::FPSeconds /*deltaSeconds*/) {
