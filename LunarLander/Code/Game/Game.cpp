@@ -18,7 +18,45 @@
 #include "Game/GameCommon.hpp"
 #include "Game/GameConfig.hpp"
 
+
+void GameOptions::SaveToConfig(Config& config) noexcept {
+    GameSettings::SaveToConfig(config);
+    config.SetValue("lockCameraRotation", m_lockCameraRotation);
+    config.SetValue("lockCameraPosition", m_lockCameraPosition);
+}
+
+void GameOptions::SetToDefault() noexcept {
+    GameSettings::SetToDefault();
+    m_lockCameraRotation = m_defaultLockCameraRotation;
+    m_lockPositionToMouse = m_defaultLockPositionToMouse;
+}
+
+bool GameOptions::IsCameraRotationLocked() const noexcept {
+    return m_lockCameraRotation;
+}
+
+bool GameOptions::IsCameraPositionLocked() const noexcept {
+    return m_lockCameraPosition;
+}
+
+const float GameOptions::GetMaxShakeAngle() const noexcept {
+    return m_maxShakeAngle;
+}
+
+const float GameOptions::GetMaxShakeOffsetHorizontal() const noexcept {
+    return m_maxShakeOffsetHorizontal;
+}
+
+const float GameOptions::GetMaxShakeOffsetVertical() const noexcept {
+    return m_maxShakeOffsetVertical;
+}
+
 void Game::Initialize() noexcept {
+    if(!g_theConfig->LoadFromFile(FileUtils::GetKnownFolderPath(FileUtils::KnownPathID::GameConfig) / "options.config")) {
+        g_theFileLogger->LogWarnLine("Config not loaded. Reverting to default settings.");
+        m_settings.SetToDefault();
+    }
+
     g_theRenderer->RegisterMaterialsFromFolder(FileUtils::GetKnownFolderPath(FileUtils::KnownPathID::GameMaterials));
     g_theRenderer->RegisterFontsFromFolder(FileUtils::GetKnownFolderPath(FileUtils::KnownPathID::GameFonts));
 
@@ -82,12 +120,52 @@ void Game::EndFrame() noexcept {
     /* DO NOTHING */
 }
 
-const GameSettings& Game::GetSettings() const noexcept {
-    return GameBase::GetSettings();
+const GameOptions& Game::GetSettings() const noexcept {
+    return m_settings;
 }
 
-GameSettings& Game::GetSettings() noexcept {
-    return GameBase::GetSettings();
+GameOptions& Game::GetSettings() noexcept {
+    return m_settings;
+}
+
+std::weak_ptr<SpriteSheet> Game::GetLanderSheet() const noexcept {
+    return m_landerSheet;
+}
+
+void Game::LockCameraRotationToLander() noexcept {
+    m_lockCameraRotation = true;
+}
+
+void Game::UnlockCameraRotationToLander() noexcept {
+    m_lockCameraRotation = false;
+}
+
+bool Game::IsCameraRotationLockedToLander() const noexcept {
+    return m_lockCameraRotation;
+}
+
+void Game::LockCameraPositionToLander() noexcept {
+    m_lockCameraPosition = true;
+}
+
+void Game::UnlockCameraPositionToLander() noexcept {
+    m_lockCameraPosition = false;
+}
+
+bool Game::IsCameraPositionLocked() const noexcept {
+    return m_lockCameraPosition;
+}
+
+bool Game::Debug_IsPositionLockedToMouse() const noexcept {
+    return m_lockPositionToMouse;
+}
+
+void Game::Debug_LockPositionToMouse() noexcept {
+    m_lockPositionToMouse = true;
+}
+
+void Game::Debug_UnlockPositionToMouse() noexcept {
+    m_lockPositionToMouse = false;
 }
 
 void Game::HandlePlayerInput(TimeUtils::FPSeconds deltaSeconds) {
@@ -102,6 +180,7 @@ void Game::HandleKeyboardInput(TimeUtils::FPSeconds /*deltaSeconds*/) {
         app->SetIsQuitting(true);
         return;
     }
+    HandleDebugInput(deltaSeconds);
 }
 
 void Game::HandleControllerInput(TimeUtils::FPSeconds /*deltaSeconds*/) {
@@ -120,6 +199,23 @@ void Game::HandleDebugInput(TimeUtils::FPSeconds deltaSeconds) {
 void Game::HandleDebugKeyboardInput(TimeUtils::FPSeconds /*deltaSeconds*/) {
     if(g_theUISystem->WantsInputKeyboardCapture()) {
         return;
+    }
+    if (g_theInputSystem->WasKeyJustPressed(KeyCode::F1)) {
+        m_debug_render = !m_debug_render;
+    }
+    if(g_theInputSystem->WasKeyJustPressed(KeyCode::F2)) {
+        if(Debug_IsPositionLockedToMouse()) {
+            Debug_UnlockPositionToMouse();
+        } else {
+            Debug_LockPositionToMouse();
+        }
+    }
+    if (g_theInputSystem->WasKeyJustPressed(KeyCode::F3)) {
+        if(IsCameraRotationLockedToLander()) {
+            UnlockCameraRotationToLander();
+        } else {
+            LockCameraRotationToLander();
+        }
     }
     if(g_theInputSystem->WasKeyJustPressed(KeyCode::F4)) {
         g_theUISystem->ToggleImguiDemoWindow();

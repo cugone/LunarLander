@@ -7,6 +7,38 @@
 
 #include "Engine/Renderer/Camera2D.hpp"
 
+class GameOptions : public GameSettings {
+public:
+    GameOptions() noexcept = default;
+    GameOptions(const GameOptions& other) noexcept = default;
+    GameOptions(GameOptions&& other) noexcept = default;
+    virtual ~GameOptions() noexcept = default;
+    GameOptions& operator=(const GameOptions& rhs) noexcept = default;
+    GameOptions& operator=(GameOptions&& rhs) noexcept = default;
+
+    virtual void SaveToConfig(Config& config) noexcept override;
+    virtual void SetToDefault() noexcept override;
+
+    bool IsCameraRotationLocked() const noexcept;
+    bool IsCameraPositionLocked() const noexcept;
+
+    const float GetMaxShakeAngle() const noexcept;
+    const float GetMaxShakeOffsetHorizontal() const noexcept;
+    const float GetMaxShakeOffsetVertical() const noexcept;
+
+protected:
+private:
+    bool m_lockCameraRotation{ false };
+    bool m_defaultLockCameraRotation{ false };
+    bool m_lockCameraPosition{ false };
+    bool m_defaultLockCameraPosition{ false };
+    bool m_lockPositionToMouse{ false };
+    bool m_defaultLockPositionToMouse{ false };
+    float m_maxShakeAngle{ 2.5f };
+    float m_maxShakeOffsetHorizontal{25.0f};
+    float m_maxShakeOffsetVertical{25.0f};
+};
+
 class Game : public GameBase {
 public:
     Game() = default;
@@ -22,8 +54,22 @@ public:
     void Render() const noexcept override;
     void EndFrame() noexcept override;
 
-    const GameSettings& GetSettings() const noexcept override;
-    GameSettings& GetSettings() noexcept override;
+    const GameOptions& GetSettings() const noexcept override;
+    GameOptions& GetSettings() noexcept override;
+
+
+    bool IsCameraRotationLockedToLander() const noexcept;
+    void LockCameraRotationToLander() noexcept;
+    void UnlockCameraRotationToLander() noexcept;
+
+    void LockCameraPositionToLander() noexcept;
+    void UnlockCameraPositionToLander() noexcept;
+    bool IsCameraPositionLocked() const noexcept;
+
+    bool Debug_IsPositionLockedToMouse() const noexcept;
+    void Debug_LockPositionToMouse() noexcept;
+    void Debug_UnlockPositionToMouse() noexcept;
+
 protected:
 private:
 
@@ -38,6 +84,10 @@ private:
 
     mutable Camera2D _ui_camera2D{};
     OrthographicCameraController _cameraController{};
-    bool _debug_render = false;
+    GameOptions m_settings{};
+    bool m_debug_render{ false };
+    bool m_lockPositionToMouse{ false };
+    bool m_lockCameraRotation{ false };
+    bool m_lockCameraPosition{ false };
 };
 
