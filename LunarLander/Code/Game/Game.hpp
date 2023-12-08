@@ -73,6 +73,10 @@ public:
 protected:
 private:
 
+    AABB2 CalcOrthoBounds() const noexcept;
+    AABB2 CalcViewBounds(const Vector2& cam_pos) const noexcept;
+    void SetModelViewProjectionBounds() const noexcept;
+
     void HandleDebugInput(TimeUtils::FPSeconds deltaSeconds);
     void HandleDebugKeyboardInput(TimeUtils::FPSeconds deltaSeconds);
     void HandleDebugMouseInput(TimeUtils::FPSeconds deltaSeconds);
@@ -82,8 +86,8 @@ private:
     void HandleControllerInput(TimeUtils::FPSeconds deltaSeconds);
     void HandleMouseInput(TimeUtils::FPSeconds deltaSeconds);
 
-    mutable Camera2D _ui_camera2D{};
-    OrthographicCameraController _cameraController{};
+    mutable Camera2D m_ui_camera2D{};
+    mutable OrthographicCameraController m_cameraController{};
     GameOptions m_settings{};
     bool m_debug_render{ false };
     bool m_lockPositionToMouse{ false };

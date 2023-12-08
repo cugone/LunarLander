@@ -73,8 +73,53 @@ void Game::Update(TimeUtils::FPSeconds deltaSeconds) noexcept {
 
     HandlePlayerInput(deltaSeconds);
 
-    _ui_camera2D.Update(deltaSeconds);
-    _cameraController.Update(deltaSeconds);
+    m_ui_camera2D.Update(deltaSeconds);
+    m_cameraController.Update(deltaSeconds);
+
+    m_cameraController.SetPosition(Vector2::Zero);
+    m_cameraController.SetRotationDegrees(0.0f);
+}
+AABB2 Game::CalcOrthoBounds() const noexcept {
+    float half_view_height = m_cameraController.GetCamera().GetViewHeight() * 0.5f;
+    float half_view_width = half_view_height * m_cameraController.GetAspectRatio();
+    auto ortho_mins = Vector2{ -half_view_width, -half_view_height };
+    auto ortho_maxs = Vector2{ half_view_width, half_view_height };
+    return AABB2{ ortho_mins, ortho_maxs };
+}
+
+AABB2 Game::CalcViewBounds(const Vector2& cam_pos) const noexcept {
+    auto view_bounds = CalcOrthoBounds();
+    view_bounds.Translate(cam_pos);
+    return view_bounds;
+}
+
+void Game::SetModelViewProjectionBounds() const noexcept {
+    const auto ortho_bounds = CalcOrthoBounds();
+
+    g_theRenderer->SetModelMatrix(Matrix4::I);
+    g_theRenderer->SetViewMatrix(Matrix4::I);
+    const auto leftBottom = Vector2{ ortho_bounds.mins.x, ortho_bounds.maxs.y };
+    const auto rightTop = Vector2{ ortho_bounds.maxs.x, ortho_bounds.mins.y };
+    m_cameraController.GetCamera().SetupView(leftBottom, rightTop, Vector2(0.0f, 1000.0f));
+    g_theRenderer->SetCamera(m_cameraController.GetCamera());
+
+    const Camera2D& base_camera = m_cameraController.GetCamera();
+    Camera2D shakyCam = m_cameraController.GetCamera();
+    const float shake = shakyCam.GetShake();
+    const float shaky_angle = GetSettings().GetMaxShakeAngle() * shake * MathUtils::GetRandomNegOneToOne<float>();
+    const float shaky_offsetX = GetSettings().GetMaxShakeOffsetHorizontal() * shake * MathUtils::GetRandomNegOneToOne<float>();
+    const float shaky_offsetY = GetSettings().GetMaxShakeOffsetVertical()* shake* MathUtils::GetRandomNegOneToOne<float>();
+    shakyCam.orientation_degrees = base_camera.orientation_degrees + shaky_angle;
+    shakyCam.position = base_camera.position + Vector2{ shaky_offsetX, shaky_offsetY };
+
+    const float cam_rotation_z = shakyCam.GetOrientation();
+    const auto VRz = Matrix4::Create2DRotationDegreesMatrix(-cam_rotation_z);
+
+    const auto& cam_pos = shakyCam.GetPosition();
+    const auto Vt = Matrix4::CreateTranslationMatrix(-cam_pos);
+    const auto v = Matrix4::MakeRT(Vt, VRz);
+    g_theRenderer->SetViewMatrix(v);
+
 }
 
 void Game::Render() const noexcept {
@@ -82,38 +127,26 @@ void Game::Render() const noexcept {
 
 
     //World View
-    g_theRenderer->SetMaterial(g_theRenderer->GetMaterial("__2D"));
-    {
-        const auto S = Matrix4::CreateScaleMatrix(Vector2::One);
-        const auto R = Matrix4::I;
-        const auto T = Matrix4::I;
-        const auto M = Matrix4::MakeSRT(S, R, T);
-        g_theRenderer->DrawQuad2D(M, Rgba::ForestGreen);
-    }
+    SetModelViewProjectionBounds();
 
+    g_theRenderer->SetMaterial("__2D");
+    AABB2 ground = AABB2::Neg_One_to_One;
+    ground.ScalePadding(100.0, 50.0f);
+    ground.Translate(Vector2{ 0.0f, 100.0f - ground.CalcDimensions().y * 0.5f });
+
+    g_theRenderer->SetModelMatrix(Matrix4::I);
+    g_theRenderer->DrawAABB2(ground, Rgba::White, Rgba::LightGray, Vector2::One);
+
+    }
     // HUD View
-    {
-        const auto ui_view_height = static_cast<float>(GetSettings().GetWindowHeight());
-        const auto ui_view_width = ui_view_height * _ui_camera2D.GetAspectRatio();
-        const auto ui_view_extents = Vector2{ui_view_width, ui_view_height};
-        const auto ui_view_half_extents = ui_view_extents * 0.5f;
-        const auto ui_cam_pos = Vector2::Zero;
-        g_theRenderer->BeginHUDRender(_ui_camera2D, ui_cam_pos, ui_view_height);
 
-        {
-            const auto S = Matrix4::CreateScaleMatrix(Vector2::One * (1.0f + MathUtils::SineWaveDegrees(g_theRenderer->GetGameTime().count())));
-            static float r = 0.0f;
-            const std::string text = "Abrams 2022 Template";
-            const auto* font = g_theRenderer->GetFont("System32");
-            const auto T = Matrix4::I;
-            const auto nT = Matrix4::CreateTranslationMatrix(-Vector2{font->CalculateTextWidth(text), font->CalculateTextHeight(text)} * 0.5f);
-            const auto R = Matrix4::Create2DRotationDegreesMatrix(r);
-            static const float w = 90.0f;
-            r += g_theRenderer->GetGameFrameTime().count() * w;
-            const auto M = Matrix4::MakeRT(nT, Matrix4::MakeSRT(S, R, T));
-            g_theRenderer->DrawTextLine(M, font, text);
-        }
-    }
+    const auto ui_view_height = static_cast<float>(GetSettings().GetWindowHeight());
+    const auto ui_view_width = ui_view_height * m_ui_camera2D.GetAspectRatio();
+    const auto ui_view_extents = Vector2{ui_view_width, ui_view_height};
+    const auto ui_view_half_extents = ui_view_extents * 0.5f;
+    const auto ui_cam_pos = Vector2::Zero;
+    g_theRenderer->BeginHUDRender(m_ui_camera2D, ui_cam_pos, ui_view_height);
+
 }
 
 void Game::EndFrame() noexcept {
