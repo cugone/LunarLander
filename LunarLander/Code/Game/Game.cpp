@@ -244,6 +244,11 @@ void Game::HandleKeyboardInput(TimeUtils::FPSeconds deltaSeconds) {
     if (g_theInputSystem->IsKeyDown(KeyCode::E)) {
         m_lander->RotateRight();
     }
+    if (g_theInputSystem->IsKeyDown(KeyCode::A)) {
+        m_lander->TranslateLeft();
+    } else if (g_theInputSystem->IsKeyDown(KeyCode::D)) {
+        m_lander->TranslateRight();
+    }
     if (g_theInputSystem->IsKeyDown(KeyCode::S)) {
         m_lander->BeginThrust();
     }
