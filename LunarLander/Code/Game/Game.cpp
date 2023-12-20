@@ -79,7 +79,7 @@ void Game::Initialize() noexcept {
 }
 
 void Game::BeginFrame() noexcept {
-    /* DO NOTHING */
+    m_lander->BeginFrame();
 }
 
 void Game::Update(TimeUtils::FPSeconds deltaSeconds) noexcept {
@@ -174,7 +174,7 @@ void Game::Render() const noexcept {
 }
 
 void Game::EndFrame() noexcept {
-    /* DO NOTHING */
+    m_lander->EndFrame();
 }
 
 const GameOptions& Game::GetSettings() const noexcept {
