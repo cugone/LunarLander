@@ -162,6 +162,12 @@ void Lander::RotateRight() noexcept {
     m_body.ApplyTorque(Vector2::X_Axis, m_thrustForceKiloNewtons * 1000.0f, TimeUtils::Frames{ 1 });
 }
 
+void Lander::TranslateLeft() noexcept {
+    m_body.ApplyImpulse(-Vector2::X_Axis, m_thrustForceKiloNewtons * 1000.0f);
+}
+
+void Lander::TranslateRight() noexcept {
+    m_body.ApplyImpulse(Vector2::X_Axis, m_thrustForceKiloNewtons * 1000.0f);
 }
 
 void Lander::BeginThrust() noexcept {

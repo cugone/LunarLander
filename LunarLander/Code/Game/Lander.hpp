@@ -25,6 +25,10 @@ public:
 
     void RotateLeft() noexcept;
     void RotateRight() noexcept;
+
+    void TranslateLeft() noexcept;
+    void TranslateRight() noexcept;
+
     void BeginThrust() noexcept;
     void EndThrust() noexcept;
 
