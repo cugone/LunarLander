@@ -292,6 +292,13 @@ void Game::HandleDebugKeyboardInput(TimeUtils::FPSeconds /*deltaSeconds*/) {
         }
     }
     if(g_theInputSystem->WasKeyJustPressed(KeyCode::F4)) {
+        if (IsCameraPositionLocked()) {
+            UnlockCameraPositionToLander();
+        } else {
+            LockCameraPositionToLander();
+        }
+    }
+    if(g_theInputSystem->WasKeyJustPressed(KeyCode::F6)) {
         g_theUISystem->ToggleImguiDemoWindow();
     }
 }
