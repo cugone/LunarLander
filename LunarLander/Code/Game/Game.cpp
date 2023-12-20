@@ -100,6 +100,7 @@ void Game::Update(TimeUtils::FPSeconds deltaSeconds) noexcept {
         m_cameraController.SetPosition(m_lander->GetPosition());
     }
 }
+
 AABB2 Game::CalcOrthoBounds() const noexcept {
     float half_view_height = m_cameraController.GetCamera().GetViewHeight() * 0.5f;
     float half_view_width = half_view_height * m_cameraController.GetAspectRatio();
