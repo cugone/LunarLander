@@ -51,5 +51,6 @@ private:
     float m_rotationSpeedDegrees{1.0f};
     float m_deltaOrientation{0.0f};
     float m_fuelPounds{1.0f};
+    const float m_thrustForceKiloNewtons{10.0f};
     bool m_isThrusting{ false };
 };

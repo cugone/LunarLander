@@ -65,7 +65,9 @@ R"(
         RigidBodyDesc desc{};
         desc.physicsDesc = PhysicsDesc{};
         desc.physicsDesc.angularDamping = 1.0f;
-        desc.collider = new ColliderOBB(Vector2::Zero, Vector2::One * 5.0f);
+        desc.physicsDesc.enableGravity = true;
+        desc.physicsDesc.enablePhysics = true;
+        desc.collider = new ColliderOBB(Vector2::Zero, Vector2::One * 23.0f);
         m_body = RigidBody{ desc };
     }
 
@@ -77,10 +79,11 @@ void Lander::BeginFrame() noexcept {
 }
 
 void Lander::Update(TimeUtils::FPSeconds deltaSeconds) noexcept {
-    if(m_isThrusting) {
-        if(HasFuel()) {
-            m_sprite->Resume();
-        }
+    if(m_isThrusting && HasFuel()) {
+        //m_currentSprite->Resume();
+        m_body.ApplyImpulse(-Vector2::Y_Axis, m_thrustForceKiloNewtons * 1000.0f);
+    } else {
+        m_currentSprite = m_noThrustSprite.get();
     }
 
     m_orientation += m_deltaOrientation * deltaSeconds.count();
@@ -112,12 +115,12 @@ void Lander::Update(TimeUtils::FPSeconds deltaSeconds) noexcept {
         if (auto* game = GetGameAs<Game>(); game != nullptr) {
             if (game->Debug_IsPositionLockedToMouse()) {
                 const auto mouse_pos = g_theInputSystem->GetCursorWindowPosition();
-                m_position = Vector2{ g_theRenderer->ConvertScreenToWorldCoords(mouse_pos) };
+                m_body.SetPosition(Vector2{ g_theRenderer->ConvertScreenToWorldCoords(mouse_pos) });
             }
         }
-        const auto S = Matrix4::CreateScaleMatrix(Vector2{m_sprite->GetFrameDimensions()});
-        const auto R = Matrix4::Create2DRotationMatrix(m_orientation);
-        const auto T = Matrix4::CreateTranslationMatrix(m_position);
+        const auto S = Matrix4::CreateScaleMatrix(Vector2{ m_currentSprite->GetFrameDimensions()});
+        const auto R = Matrix4::Create2DRotationMatrix(MathUtils::ConvertDegreesToRadians(m_body.GetOrientationDegrees()));
+        const auto T = Matrix4::CreateTranslationMatrix(m_body.GetPosition());
         m_transform = Matrix4::MakeSRT(S, R, T);
     }
 
@@ -129,10 +132,11 @@ void Lander::Render() const noexcept {
 }
 
 void Lander::DebugRender() const noexcept {
-    auto landerCollision = OBB2{ GetTransform().GetTranslation().GetXY(), GetTransform().GetScale().GetXY(), GetTransform().GetRotation2D() };
+    //auto landerCollision = OBB2{ GetTransform().GetTranslation().GetXY(), GetTransform().GetScale().GetXY(), GetTransform().GetRotation2D() };
     g_theRenderer->SetMaterial("__2D");
     g_theRenderer->SetModelMatrix(Matrix4::I);
-    g_theRenderer->DrawOBB2(landerCollision, Rgba::Green);
+    m_body.DebugRender();
+    //g_theRenderer->DrawOBB2(landerCollision, Rgba::Green);
 }
 
 void Lander::EndFrame() noexcept {
@@ -143,21 +147,29 @@ void Lander::EndFrame() noexcept {
 }
 
 void Lander::RotateLeft() noexcept {
-    m_deltaOrientation -= MathUtils::ConvertDegreesToRadians(m_rotationSpeedDegrees);
-    if(MathUtils::IsEquivalentToZero(m_deltaOrientation)) {
-        m_deltaOrientation = 0.0f;
-    }
+    //m_deltaOrientation -= MathUtils::ConvertDegreesToRadians(m_rotationSpeedDegrees);
+    //if(MathUtils::IsEquivalentToZero(m_deltaOrientation)) {
+    //    m_deltaOrientation = 0.0f;
+    //}
+    m_body.ApplyTorque(-Vector2::X_Axis, m_thrustForceKiloNewtons * 1000.0f, TimeUtils::Frames{ 1 });
 }
 
 void Lander::RotateRight() noexcept {
-    m_deltaOrientation += MathUtils::ConvertDegreesToRadians(m_rotationSpeedDegrees);
-    if (MathUtils::IsEquivalentToZero(m_deltaOrientation)) {
-        m_deltaOrientation = 0.0f;
-    }
+    //m_deltaOrientation += MathUtils::ConvertDegreesToRadians(m_rotationSpeedDegrees);
+    //if (MathUtils::IsEquivalentToZero(m_deltaOrientation)) {
+    //    m_deltaOrientation = 0.0f;
+    //}
+    m_body.ApplyTorque(Vector2::X_Axis, m_thrustForceKiloNewtons * 1000.0f, TimeUtils::Frames{ 1 });
+}
+
 }
 
 void Lander::BeginThrust() noexcept {
     m_isThrusting = true;
+    //if (!m_isThrusting) {
+    //    m_isThrusting = true;
+    //    m_currentSprite = m_sprite.get();
+    //}
 }
 
 void Lander::EndThrust() noexcept {
@@ -168,23 +180,23 @@ void Lander::EndThrust() noexcept {
 }
 
 const Vector2 Lander::GetPosition() const noexcept {
-    return m_position;
+    return m_body.GetPosition();
 }
 
 void Lander::SetPosition(const Vector2& newPosition) noexcept {
-    m_position = newPosition;
+    m_body.SetPosition(newPosition, true);
 }
 
 const float Lander::GetOrientationDegrees() const noexcept {
-    return MathUtils::ConvertRadiansToDegrees(m_orientation);
+    return m_body.GetOrientationDegrees();
 }
 
 const float Lander::GetOrientationRadians() const noexcept {
-    return m_orientation;
+    return MathUtils::ConvertDegreesToRadians(GetOrientationDegrees());
 }
 
 const Matrix4& Lander::GetTransform() const noexcept {
-    return m_transform;
+    return m_body.transform;
 }
 
 bool Lander::HasFuel() const noexcept {
