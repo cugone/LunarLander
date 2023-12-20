@@ -65,8 +65,8 @@ void Game::Initialize() noexcept {
 
     m_cameraController = OrthographicCameraController();
     m_cameraController.SetPosition(Vector2::Zero);
-    m_cameraController.SetZoomLevelRange(Vector2{8.0f, static_cast<float>(g_theRenderer->GetOutput()->GetDimensions().y)});
-    m_cameraController.SetZoomLevel(static_cast<float>(g_theRenderer->GetOutput()->GetDimensions().y));
+    m_cameraController.SetZoomLevelRange(Vector2{ g_theRenderer->GetOutput()->GetDimensions().y * 0.10f, g_theRenderer->GetOutput()->GetDimensions().y * 0.50f});
+    m_cameraController.SetZoomLevel(g_theRenderer->GetOutput()->GetDimensions().y * 0.10f);
 
     m_lockCameraRotation = GetSettings().IsCameraRotationLocked();
     m_lockCameraPosition = GetSettings().IsCameraPositionLocked();
@@ -75,6 +75,7 @@ void Game::Initialize() noexcept {
 
     m_lander = std::make_unique<Lander>();
     m_lander->SetPosition(Vector2::Zero);
+
 }
 
 void Game::BeginFrame() noexcept {
