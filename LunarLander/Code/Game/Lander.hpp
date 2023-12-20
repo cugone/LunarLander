@@ -40,6 +40,8 @@ public:
 protected:
 private:
     static inline std::unique_ptr<AnimatedSprite> m_sprite{};
+    static inline std::unique_ptr<AnimatedSprite> m_noThrustSprite{};
+    AnimatedSprite* m_currentSprite{ nullptr };
     Mesh::Builder m_builder{};
     Matrix4 m_transform{};
     float m_orientation{};

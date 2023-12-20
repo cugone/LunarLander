@@ -10,16 +10,56 @@
 
 #include "Game/Game.hpp"
 
+#include "Engine/Core/DataUtils.hpp"
+
+#include <string>
+
 Lander::Lander() noexcept {
+    {
+        tinyxml2::XMLDocument doc;
+        const std::string str =
+R"(
+<animation name="thrust">
+    <animationset startindex="1" framelength="2" duration="0.33" loop="true" />
+</animation>
+)";
+        doc.Parse(str.c_str(), str.size());
+        auto xml_first = doc.RootElement();
+        m_sprite = g_theRenderer->CreateAnimatedSprite(*xml_first);
+    }
+    {
+        tinyxml2::XMLDocument doc;
+        const std::string str =
+            R"(
+<animation name="nothrust">
+    <animationset startindex="0" framelength="1" duration="0" />
+</animation>
+)";
+        doc.Parse(str.c_str(), str.size());
+        auto xml_first = doc.RootElement();
+        m_noThrustSprite = g_theRenderer->CreateAnimatedSprite(*xml_first);
+    }
     {
         AnimatedSpriteDesc desc{};
         desc.material = g_theRenderer->GetMaterial("lander");
         desc.spriteSheet = GetGameAs<Game>()->GetLanderSheet();
-        desc.frameLength = 3;
+        desc.frameLength = 2;
+        desc.startSpriteIndex = 1;
         desc.playbackMode = AnimatedSprite::SpriteAnimMode::Looping;
-        desc.durationSeconds = TimeUtils::FPFrames{3};
+        desc.durationSeconds = TimeUtils::FPSeconds{0.25f};
         m_sprite = g_theRenderer->CreateAnimatedSprite(desc);
     }
+    {
+        AnimatedSpriteDesc desc{};
+        desc.material = g_theRenderer->GetMaterial("lander");
+        desc.spriteSheet = GetGameAs<Game>()->GetLanderSheet();
+        desc.frameLength = 1;
+        desc.startSpriteIndex = 0;
+        desc.playbackMode = AnimatedSprite::SpriteAnimMode::Play_To_End;
+        desc.durationSeconds = TimeUtils::FPFrames{1};
+        m_noThrustSprite = g_theRenderer->CreateAnimatedSprite(desc);
+    }
+    m_currentSprite = m_noThrustSprite.get();
 
     {
         RigidBodyDesc desc{};
@@ -28,6 +68,8 @@ Lander::Lander() noexcept {
         desc.collider = new ColliderOBB(Vector2::Zero, Vector2::One * 5.0f);
         m_body = RigidBody{ desc };
     }
+
+
 }
 
 void Lander::BeginFrame() noexcept {
@@ -43,9 +85,9 @@ void Lander::Update(TimeUtils::FPSeconds deltaSeconds) noexcept {
 
     m_orientation += m_deltaOrientation * deltaSeconds.count();
     m_body.Update(deltaSeconds);
-    m_sprite->Update(deltaSeconds);
+    m_currentSprite->Update(deltaSeconds);
 
-    const auto uvs = m_sprite->GetCurrentTexCoords();
+    const auto uvs = m_currentSprite->GetCurrentTexCoords();
 
     auto& builder = m_builder;
     builder.Begin(PrimitiveType::Triangles);
@@ -64,7 +106,7 @@ void Lander::Update(TimeUtils::FPSeconds deltaSeconds) noexcept {
     builder.AddVertex(Vector2{ +0.5f, +0.5f });
 
     builder.AddIndicies(Mesh::Builder::Primitive::Quad);
-    builder.End(m_sprite->GetMaterial());
+    builder.End(m_currentSprite->GetMaterial());
 
     {
         if (auto* game = GetGameAs<Game>(); game != nullptr) {
@@ -95,9 +137,8 @@ void Lander::DebugRender() const noexcept {
 
 void Lander::EndFrame() noexcept {
     m_deltaOrientation = 0.0f;
-    if (!(m_isThrusting || HasFuel())) {
-        m_sprite->Reset();
-        m_sprite->Pause();
+    if (!m_isThrusting || !HasFuel()) {
+        EndThrust();
     }
 }
 
@@ -120,7 +161,10 @@ void Lander::BeginThrust() noexcept {
 }
 
 void Lander::EndThrust() noexcept {
-    m_isThrusting = false;
+    if (m_isThrusting) {
+        m_isThrusting = false;
+        m_currentSprite = m_noThrustSprite.get();
+    }
 }
 
 const Vector2 Lander::GetPosition() const noexcept {
