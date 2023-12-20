@@ -291,7 +291,7 @@ void Game::HandleDebugKeyboardInput(TimeUtils::FPSeconds /*deltaSeconds*/) {
             LockCameraRotationToLander();
         }
     }
-    if(g_theInputSystem->WasKeyJustPressed(KeyCode::F4)) {
+    if(g_theInputSystem->WasKeyJustPressed(KeyCode::F)) {
         if (IsCameraPositionLocked()) {
             UnlockCameraPositionToLander();
         } else {
