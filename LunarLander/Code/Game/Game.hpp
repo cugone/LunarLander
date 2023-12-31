@@ -79,8 +79,6 @@ public:
 protected:
 private:
 
-    void SetModelViewProjectionBounds() const noexcept;
-
     void HandleDebugInput(TimeUtils::FPSeconds deltaSeconds);
     void HandleDebugKeyboardInput(TimeUtils::FPSeconds deltaSeconds);
     void HandleDebugMouseInput(TimeUtils::FPSeconds deltaSeconds);

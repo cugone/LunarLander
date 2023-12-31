@@ -101,41 +101,12 @@ void Game::Update(TimeUtils::FPSeconds deltaSeconds) noexcept {
     }
 }
 
-void Game::SetModelViewProjectionBounds() const noexcept {
-    const auto ortho_bounds = m_cameraController.CalcOrthoBounds();
-
-    g_theRenderer->SetModelMatrix(Matrix4::I);
-    g_theRenderer->SetViewMatrix(Matrix4::I);
-    const auto leftBottom = Vector2{ ortho_bounds.mins.x, ortho_bounds.maxs.y };
-    const auto rightTop = Vector2{ ortho_bounds.maxs.x, ortho_bounds.mins.y };
-    m_cameraController.GetCamera().SetupView(leftBottom, rightTop, Vector2(0.0f, 1000.0f));
-    g_theRenderer->SetCamera(m_cameraController.GetCamera());
-
-    const Camera2D& base_camera = m_cameraController.GetCamera();
-    Camera2D shakyCam = m_cameraController.GetCamera();
-    const float shake = shakyCam.GetShake();
-    const float shaky_angle = GetSettings().GetMaxShakeAngle() * shake * MathUtils::GetRandomNegOneToOne<float>();
-    const float shaky_offsetX = GetSettings().GetMaxShakeOffsetHorizontal() * shake * MathUtils::GetRandomNegOneToOne<float>();
-    const float shaky_offsetY = GetSettings().GetMaxShakeOffsetVertical()* shake* MathUtils::GetRandomNegOneToOne<float>();
-    shakyCam.orientation_degrees = base_camera.orientation_degrees + shaky_angle;
-    shakyCam.position = base_camera.position + Vector2{ shaky_offsetX, shaky_offsetY };
-
-    const float cam_rotation_z = shakyCam.GetOrientation();
-    const auto VRz = Matrix4::Create2DRotationDegreesMatrix(-cam_rotation_z);
-
-    const auto& cam_pos = shakyCam.GetPosition();
-    const auto Vt = Matrix4::CreateTranslationMatrix(-cam_pos);
-    const auto v = Matrix4::MakeRT(Vt, VRz);
-    g_theRenderer->SetViewMatrix(v);
-
-}
-
 void Game::Render() const noexcept {
     g_theRenderer->BeginRenderToBackbuffer();
 
 
     //World View
-    SetModelViewProjectionBounds();
+    m_cameraController.SetModelViewProjectionBounds();
 
     g_theRenderer->SetMaterial("__2D");
     AABB2 ground = AABB2::Neg_One_to_One;
