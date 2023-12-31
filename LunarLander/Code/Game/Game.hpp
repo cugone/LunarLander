@@ -79,8 +79,6 @@ public:
 protected:
 private:
 
-    AABB2 CalcOrthoBounds() const noexcept;
-    AABB2 CalcViewBounds(const Vector2& cam_pos) const noexcept;
     void SetModelViewProjectionBounds() const noexcept;
 
     void HandleDebugInput(TimeUtils::FPSeconds deltaSeconds);

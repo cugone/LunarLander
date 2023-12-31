@@ -101,22 +101,8 @@ void Game::Update(TimeUtils::FPSeconds deltaSeconds) noexcept {
     }
 }
 
-AABB2 Game::CalcOrthoBounds() const noexcept {
-    float half_view_height = m_cameraController.GetCamera().GetViewHeight() * 0.5f;
-    float half_view_width = half_view_height * m_cameraController.GetAspectRatio();
-    auto ortho_mins = Vector2{ -half_view_width, -half_view_height };
-    auto ortho_maxs = Vector2{ half_view_width, half_view_height };
-    return AABB2{ ortho_mins, ortho_maxs };
-}
-
-AABB2 Game::CalcViewBounds(const Vector2& cam_pos) const noexcept {
-    auto view_bounds = CalcOrthoBounds();
-    view_bounds.Translate(cam_pos);
-    return view_bounds;
-}
-
 void Game::SetModelViewProjectionBounds() const noexcept {
-    const auto ortho_bounds = CalcOrthoBounds();
+    const auto ortho_bounds = m_cameraController.CalcOrthoBounds();
 
     g_theRenderer->SetModelMatrix(Matrix4::I);
     g_theRenderer->SetViewMatrix(Matrix4::I);
