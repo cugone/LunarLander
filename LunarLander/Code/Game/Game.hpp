@@ -68,6 +68,7 @@ public:
     void LockCameraRotationToLander() noexcept;
     void UnlockCameraRotationToLander() noexcept;
 
+    void ToggleLockCameraPositionToLander() noexcept;
     void LockCameraPositionToLander() noexcept;
     void UnlockCameraPositionToLander() noexcept;
     bool IsCameraPositionLocked() const noexcept;

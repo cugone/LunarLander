@@ -167,6 +167,10 @@ void Game::UnlockCameraPositionToLander() noexcept {
     m_lockCameraPosition = false;
 }
 
+void Game::ToggleLockCameraPositionToLander() noexcept {
+    m_lockCameraPosition = !m_lockCameraPosition;
+}
+
 bool Game::IsCameraPositionLocked() const noexcept {
     return m_lockCameraPosition;
 }
@@ -212,6 +216,9 @@ void Game::HandleKeyboardInput(TimeUtils::FPSeconds deltaSeconds) {
     }
     if (g_theInputSystem->WasKeyJustReleased(KeyCode::S)) {
         m_lander->EndThrust();
+    }
+    if (g_theInputSystem->WasKeyJustPressed(KeyCode::L)) {
+        ToggleLockCameraPositionToLander();
     }
 }
 
